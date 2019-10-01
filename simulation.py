@@ -22,18 +22,45 @@ flips
 ((flips == "H").sum(axis=1) > 3).mean()
 
 # 3. There are approximitely 3 web development cohorts for every 1 data science cohort at Codeup. Assuming that Codeup randomly selects an alumni to put on a billboard, what are the odds that the two billboards I drive past both have data science students on them?
-n_trials = 5
-n_cohort = 3
+n_sim_boards = nrows = 10_000
+n_boards = ncols = 2 
+p_dscohort = .25
 
+data = np.random.random((nrows,ncols))
+data
 
-# Codeup students buy, on average, 3 poptart packages (+- 1.5) a day from the snack vending machine. If on monday the machine is restocked with 17 poptart packages, how likely is it that I will be able to buy some poptarts on Friday afternoon?
+billboard = (data <= p_dscohort)
 
-# Compare Heights
+(billboard.sum(axis=1) == 2).mean()
+
+# 4. Codeup students buy, on average, 3 poptart packages (+- 1.5) a day from the snack vending machine. If on monday the machine is restocked with 17 poptart packages, how likely is it that I will be able to buy some poptarts on Friday afternoon?
+n_trials = 10_000
+avg_poptart = 3
+days = 5
+error = 1.5
+total_poptarts = 17
+
+poptarts_eaten = np.random.normal(avg_poptart*days,error,n_trials)
+
+(total_poptarts - poptarts_eaten >= 1).mean()
+
+# 5. Compare Heights
 
 # Men have an average height of 178 cm and standard deviation of 8cm.
 # Women have a mean of 170, sd = 6cm.
 # If a man and woman are chosen at random, P(woman taller than man)?
-# When installing anaconda on a student's computer, there's a 1 in 250 chance that the download is corrupted and the installation fails. What are the odds that after having 50 students download anaconda, no one has an installation issue? 100 students?
+avg_man_height = 178
+man_height_sd = 8
+avg_wom_height = 170
+wom_height_sd = 6
+
+n_trials = 5
+
+
+
+
+
+# 6. When installing anaconda on a student's computer, there's a 1 in 250 chance that the download is corrupted and the installation fails. What are the odds that after having 50 students download anaconda, no one has an installation issue? 100 students?
 
 # What is the probability that we observe an installation issue within the first 150 students that download anaconda?
 

@@ -41,6 +41,8 @@ error = 1.5
 total_poptarts = 17
 
 poptarts_eaten = np.random.normal(avg_poptart*days,error,n_trials)
+poptarts_eaten = poptarts_eaten.round()
+poptarts_eaten
 
 (total_poptarts - poptarts_eaten >= 1).mean()
 
@@ -54,20 +56,79 @@ man_height_sd = 8
 avg_wom_height = 170
 wom_height_sd = 6
 
-n_trials = 5
+n_trials = 10_000
 
+men_heights = np.random.normal(avg_man_height, man_height_sd, n_trials)
+wom_heights = np.random.normal(avg_wom_height, wom_height_sd, n_trials)
 
-
-
+(wom_heights > men_heights).mean()
 
 # 6. When installing anaconda on a student's computer, there's a 1 in 250 chance that the download is corrupted and the installation fails. What are the odds that after having 50 students download anaconda, no one has an installation issue? 100 students?
+n_trials = nrows = 1_000_000
+p_corrupt = 1/250
+
+students = ncols = 50
+data = np.random.random((nrows,ncols))
+corrupt = (data <= p_corrupt)
+(corrupt.sum(axis=1) == 0).mean()
+
+students = ncols = 100
+data = np.random.random((nrows,ncols))
+corrupt = (data <= p_corrupt)
+(corrupt.sum(axis=1) == 0).mean()
 
 # What is the probability that we observe an installation issue within the first 150 students that download anaconda?
+students = ncols = 150
+data = np.random.random((nrows,ncols))
+corrupt = (data <= p_corrupt)
+(corrupt.sum(axis=1) == 0).mean()
+1 - (corrupt.sum(axis=1) == 0).mean()
 
 # How likely is it that 450 students all download anaconda without an issue?
+students = ncols = 450
+data = np.random.random((nrows,ncols))
+corrupt = (data <= p_corrupt)
+(corrupt.sum(axis=1) == 0).mean()
 
-# There's a 70% chance on any given day that there will be at least one food truck at Travis Park. However, you haven't seen a food truck there in 3 days. How unlikely is this?
+# 7. There's a 70% chance on any given day that there will be at least one food truck at Travis Park. However, you haven't seen a food truck there in 3 days. How unlikely is this?
+n_trials = 10_000
+p_foodtruck = .70
+days = 3
+
+data = np.random.random((n_trials,days))
+data
+no_food_truck = data >= p_foodtruck
+1-((no_food_truck).sum(axis=1) == 0).mean()
 
 # How likely is it that a food truck will show up sometime this week?
+days = 7
 
-# If 23 people are in the same room, what are the odds that two of them share a birthday? What if it's 20 people? 40?
+data = np.random.random((n_trials,days))
+food_truck = data <= p_foodtruck
+((food_truck).sum(axis=1) >= 1).mean()
+
+# 8. If 23 people are in the same room, what are the odds that two of them share a birthday? What if it's 20 people? 40?
+n_trial = 10_000
+days = list(range(1,365))
+
+people = 23
+
+data = np.random.choice(days,(n_trial,people))
+data
+
+df_data = pd.DataFrame(data)
+df_data
+df_data.nunique(axis=1)
+df_data.nunique(axis=1) == people
+(df_data.nunique(axis=1) == people).mean()
+
+people = 20
+data = np.random.choice(days,(n_trial,people))
+df_data = pd.DataFrame(data)
+(df_data.nunique(axis=1) == people).mean()
+
+people = 40
+data = np.random.choice(days,(n_trial,people))
+df_data = pd.DataFrame(data)
+(df_data.nunique(axis=1) == people).mean()
+

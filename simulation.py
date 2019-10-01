@@ -66,7 +66,7 @@ wom_heights = np.random.normal(avg_wom_height, wom_height_sd, n_trials)
 # 6. When installing anaconda on a student's computer, there's a 1 in 250 chance that the download is corrupted and the installation fails. What are the odds that after having 50 students download anaconda, no one has an installation issue? 100 students?
 n_trials = nrows = 1_000_000
 p_corrupt = 1/250
-
+ cc 
 students = ncols = 50
 data = np.random.random((nrows,ncols))
 corrupt = (data <= p_corrupt)

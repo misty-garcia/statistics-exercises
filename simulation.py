@@ -108,8 +108,8 @@ food_truck = data <= p_foodtruck
 ((food_truck).sum(axis=1) >= 1).mean()
 
 # 8. If 23 people are in the same room, what are the odds that two of them share a birthday? What if it's 20 people? 40?
-n_trial = 10_000
-days = list(range(1,365))
+n_trial = 100_000
+days = list(range(1,366))
 
 people = 23
 
@@ -119,16 +119,16 @@ data
 df_data = pd.DataFrame(data)
 df_data
 df_data.nunique(axis=1)
-df_data.nunique(axis=1) == people
-(df_data.nunique(axis=1) == people).mean()
+df_data.nunique(axis=1) != people
+(df_data.nunique(axis=1) != people).mean()
 
 people = 20
 data = np.random.choice(days,(n_trial,people))
 df_data = pd.DataFrame(data)
-(df_data.nunique(axis=1) == people).mean()
+(df_data.nunique(axis=1) != people).mean()
 
 people = 40
 data = np.random.choice(days,(n_trial,people))
 df_data = pd.DataFrame(data)
-(df_data.nunique(axis=1) == people).mean()
+(df_data.nunique(axis=1) != people).mean()
 

@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+np.random.seed(3)
+
 # 1. How likely is it that you roll doubles when rolling two dice?r
 n_trials = 10_000_000
 n_dice = 2
@@ -30,7 +32,6 @@ data = np.random.random((nrows,ncols))
 data
 
 billboard = (data <= p_dscohort)
-
 (billboard.sum(axis=1) == 2).mean()
 
 # 4. Codeup students buy, on average, 3 poptart packages (+- 1.5) a day from the snack vending machine. If on monday the machine is restocked with 17 poptart packages, how likely is it that I will be able to buy some poptarts on Friday afternoon?
@@ -40,8 +41,10 @@ days = 5
 error = 1.5
 total_poptarts = 17
 
-poptarts_eaten = np.random.normal(avg_poptart*days,error,n_trials)
+poptarts_eaten = np.random.normal(avg_poptart,error,(n_trials,days))
 poptarts_eaten = poptarts_eaten.round()
+poptarts_eaten = np.where(poptarts_eaten < 0,0,poptarts_eaten)
+poptarts_eaten = poptarts_eaten.sum(axis=1)
 poptarts_eaten
 
 (total_poptarts - poptarts_eaten >= 1).mean()
@@ -64,9 +67,9 @@ wom_heights = np.random.normal(avg_wom_height, wom_height_sd, n_trials)
 (wom_heights > men_heights).mean()
 
 # 6. When installing anaconda on a student's computer, there's a 1 in 250 chance that the download is corrupted and the installation fails. What are the odds that after having 50 students download anaconda, no one has an installation issue? 100 students?
-n_trials = nrows = 1_000_000
+n_trials = nrows = 10_000
 p_corrupt = 1/250
- cc 
+ 
 students = ncols = 50
 data = np.random.random((nrows,ncols))
 corrupt = (data <= p_corrupt)
@@ -90,6 +93,10 @@ data = np.random.random((nrows,ncols))
 corrupt = (data <= p_corrupt)
 (corrupt.sum(axis=1) == 0).mean()
 
+downloads = np.random.choice(["Success","Corrupted"], (nrows,ncols), p=[249/250,1/250])
+((downloads == "Corrupted").sum(axis=1) == 0).mean()
+
+
 # 7. There's a 70% chance on any given day that there will be at least one food truck at Travis Park. However, you haven't seen a food truck there in 3 days. How unlikely is this?
 n_trials = 10_000
 p_foodtruck = .70
@@ -97,18 +104,18 @@ days = 3
 
 data = np.random.random((n_trials,days))
 data
-no_food_truck = data >= p_foodtruck
-1-((no_food_truck).sum(axis=1) == 0).mean()
+food_truck = (data <= p_foodtruck)
+((food_truck).sum(axis=1) == 0).mean()
 
 # How likely is it that a food truck will show up sometime this week?
-days = 7
+days = 5
 
 data = np.random.random((n_trials,days))
 food_truck = data <= p_foodtruck
 ((food_truck).sum(axis=1) >= 1).mean()
 
 # 8. If 23 people are in the same room, what are the odds that two of them share a birthday? What if it's 20 people? 40?
-n_trial = 100_000
+n_trial = 10_000
 days = list(range(1,366))
 
 people = 23

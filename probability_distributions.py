@@ -4,15 +4,25 @@ import numpy as np
 import pandas as pd
 
 # A bank found that the average number of cars waiting during the noon hour at a drive-up window follows a Poisson distribution with a mean of 2 cars. Make a chart of this distribution and answer these questions concerning the probability of cars waiting at the drive-up window.
+n_trials = 10_000
+
+sim_cars = np.random.poisson(2,n_trials)
+
 cars = stats.poisson(2)
 
 # What is the probability that no cars drive up in the noon hour?
+(sim_cars == 0).mean()
+
 cars.pmf(0)
 
 # What is the probability that 3 or more cars come through the drive through?
+(sim_cars >= 3).mean()
+
 cars.sf(2)
 
 # How likely is it that the drive through gets at least 1 car?
+(sim_cars >= 1).mean()
+
 cars.sf(0)
 
 # 2. Grades of State University graduates are normally distributed with a mean of 3.0 and a standard deviation of .3. Calculate the following:
@@ -39,10 +49,10 @@ stats.norm(3,.3).ppf(.15)
 position = .30
 gpa = np.random.normal(mean, std, n_trials)
 np.percentile(gpa,position*100)
-np.percentile(gpa,position*100 + 10)
+np.percentile(gpa,position*100 - 10)
 
 stats.norm(3,.3).ppf(position)
-stats.norm(3,.3).ppf(position+.10)
+stats.norm(3,.3).ppf(position-.10)
 
 # If I have a GPA of 3.5, what percentile am I in?
 grade = 3.5
@@ -57,20 +67,22 @@ avg_click = .02
 visitors = 4326
 clicks = 97
 
-visitors/clicks
-
 data = np.random.choice(["click","no click"], (n_trials,visitors), p=[.02,.98])
 ((data == "click").sum(axis=1) >= 97).mean()
-data
 
-stats.poisson(visitors * avg_click).sf(clicks)
-stats.binom(visitors,avg_click).sf(clicks)
+stats.binom(visitors,avg_click).sf(clicks-1)
 
 # 4. You are working on some statistics homework consisting of 100 questions where all of the answers are a probability rounded to the hundreths place. Looking to save time, you put down random probabilities as the answer to each question.
-questions = 100 
+n_trials = 10_000
+p_correct = 1/100
 
 # What is the probability that at least one of your first 60 answers is correct?
-answers = 60
+questions = 60
+
+data = np.random.choice(["correct","not correct"],(n_trials,questions),p=[p_correct,1-p_correct])
+((data == "correct").sum(axis=1) >= 1).mean()
+
+stats.binom(questions,p_correct).sf(0)
 
 # 5. The codeup staff tends to get upset when the student break area is not cleaned up. Suppose that there's a 3% chance that any one student cleans the break area when they visit it, and, on any given day, about 90% of the 3 active cohorts of 22 students visit the break area. 
 n_trials = 10_00
@@ -125,5 +137,11 @@ wait = (num_people + 1) * order_time + receive_time
 mean_order_time = mean * order_time
 sd_order_time = sd * order_time
 
-stats.norm(mean_order_time,sd_order_time).rvs(10) + 10
+stats.norm(mean_order_time,sd_order_time).cdf(33)
 
+# Connect to the employees database and find the average salary of current employees, along with the standard deviation. Model the distribution of employees salaries with a normal distribution and answer the following questions:
+
+# What percent of employees earn less than 60,000?
+# What percent of employees earn more than 95,000?
+# What percent of employees earn between 65,000 and 80,000?
+# What do the top 5% of employees make?

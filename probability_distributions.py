@@ -1,6 +1,7 @@
 # For the following problems, use python to simulate the problem and calculate an experimental probability, then compare that to the theoretical probability.
 from scipy import stats
 import numpy as np
+import pandas as pd
 
 # A bank found that the average number of cars waiting during the noon hour at a drive-up window follows a Poisson distribution with a mean of 2 cars. Make a chart of this distribution and answer these questions concerning the probability of cars waiting at the drive-up window.
 cars = stats.poisson(2)
@@ -62,6 +63,7 @@ data = np.random.choice(["click","no click"], (n_trials,visitors), p=[.02,.98])
 ((data == "click").sum(axis=1) >= 97).mean()
 data
 
+stats.poisson(visitors * avg_click).sf(clicks)
 stats.binom(visitors,avg_click).sf(clicks)
 
 # 4. You are working on some statistics homework consisting of 100 questions where all of the answers are a probability rounded to the hundreths place. Looking to save time, you put down random probabilities as the answer to each question.
@@ -70,7 +72,58 @@ questions = 100
 # What is the probability that at least one of your first 60 answers is correct?
 answers = 60
 
-# The codeup staff tends to get upset when the student break area is not cleaned up. Suppose that there's a 3% chance that any one student cleans the break area when they visit it, and, on any given day, about 90% of the 3 active cohorts of 22 students visit the break area. How likely is it that the break area gets cleaned up each day? How likely is it that it goes two days without getting cleaned up? All week?
+# 5. The codeup staff tends to get upset when the student break area is not cleaned up. Suppose that there's a 3% chance that any one student cleans the break area when they visit it, and, on any given day, about 90% of the 3 active cohorts of 22 students visit the break area. 
+n_trials = 10_00
+p_cleaning = .03
+cohorts = 3
+students_p_cohort = 22
+p_students_break = .9
+students_on_break = round(cohorts * students_p_cohort * p_students_break)
 
-# You want to get lunch at La Panaderia, but notice that the line is usually very long at lunchtime. After several weeks of careful observation, you notice that the average number of people in line when your lunch break starts is normally distributed with a mean of 15 and standard deviation of 3. If it takes 2 minutes for each person to order, and 10 minutes from ordering to getting your food, what is the likelihood that you have at least 15 minutes left to eat your food before you have to go back to class? Assume you have one hour for lunch, and ignore travel time to and from La Panaderia.
+data = np.random.choice(["clean","no clean"],(n_trials,students_on_break),p=[.03,.97])
+p_day_clean = ((data == "clean").sum(axis=1) >= 1).mean()
+p_day_clean #experiment
+
+p_clean_day = stats.binom(students_on_break,p_cleaning).sf(p_students_break)
+p_clean_day #theory 
+
+# How likely is it that the break area gets cleaned up each day?
+n_days = 5
+data = np.random.choice(["clean today", "no clean today"],(n_trials,n_days),p = [p_day_clean, 1-p_day_clean])
+((data == "clean today").sum(axis=1) == n_days).mean() 
+
+stats.binom(n_days,p_clean_day).pmf(n_days)
+
+# How likely is it that it goes two days without getting cleaned up?
+n_days = 2
+data = np.random.choice(["clean today", "no clean today"],(n_trials,n_days),p = [p_day_clean, 1-p_day_clean])
+((data == "no clean today").sum(axis=1) == n_days).mean() 
+
+stats.binom(n_days,1-p_clean_day).pmf(n_days) 
+
+# How likely is it that it goes all week without getting cleaned up?
+n_days = 5
+data = np.random.choice(["clean today", "no clean today"],(n_trials,n_days),p = [p_day_clean, 1-p_day_clean])
+((data == "no clean today").sum(axis=1) == n_days).mean() 
+
+stats.binom(n_days,1-p_clean_day).pmf(n_days)
+
+
+# 6. You want to get lunch at La Panaderia, but notice that the line is usually very long at lunchtime. After several weeks of careful observation, you notice that the average number of people in line when your lunch break starts is normally distributed with a mean of 15 and standard deviation of 3. If it takes 2 minutes for each person to order, and 10 minutes from ordering to getting your food, what is the likelihood that you have at least 15 minutes left to eat your food before you have to go back to class? Assume you have one hour for lunch, and ignore travel time to and from La Panaderia.
+n_trials = 10_000
+mean = 15
+sd = 3
+order_time = 2
+receive_time = 10
+lunch_time = 60
+
+num_people = np.random.normal(mean,sd,n_trials).round()
+wait = (num_people + 1) * order_time + receive_time
+((lunch_time - wait) >=15).mean()
+
+# turn it into time? 
+mean_order_time = mean * order_time
+sd_order_time = sd * order_time
+
+stats.norm(mean_order_time,sd_order_time).rvs(10) + 10
 

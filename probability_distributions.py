@@ -2,6 +2,8 @@
 from scipy import stats
 import numpy as np
 import pandas as pd
+import env
+import matplotlib.pyplot as plt
 
 # A bank found that the average number of cars waiting during the noon hour at a drive-up window follows a Poisson distribution with a mean of 2 cars. Make a chart of this distribution and answer these questions concerning the probability of cars waiting at the drive-up window.
 n_trials = 10_000
@@ -9,6 +11,10 @@ n_trials = 10_000
 sim_cars = np.random.poisson(2,n_trials)
 
 cars = stats.poisson(2)
+
+x= [0,1,2,3,4,5,6,7,8]
+y= cars.pmf(x)
+plt.bar(x,y)
 
 # What is the probability that no cars drive up in the noon hour?
 (sim_cars == 0).mean()
@@ -48,11 +54,9 @@ stats.norm(3,.3).ppf(.15)
 # An eccentric alumnus left scholarship money for students in the third decile from the bottom of their class. Determine the range of the third decile. Would a student with a 2.8 grade point average qualify for this scholarship?
 position = .30
 gpa = np.random.normal(mean, std, n_trials)
-np.percentile(gpa,position*100)
-np.percentile(gpa,position*100 - 10)
+np.percentile(gpa,[position*100 - 10,position*100])
 
-stats.norm(3,.3).ppf(position)
-stats.norm(3,.3).ppf(position-.10)
+stats.norm(3,.3).ppf([position-.10,position])
 
 # If I have a GPA of 3.5, what percentile am I in?
 grade = 3.5
@@ -120,7 +124,6 @@ data = np.random.choice(["clean today", "no clean today"],(n_trials,n_days),p = 
 
 stats.binom(n_days,1-p_clean_day).pmf(n_days)
 
-
 # 6. You want to get lunch at La Panaderia, but notice that the line is usually very long at lunchtime. After several weeks of careful observation, you notice that the average number of people in line when your lunch break starts is normally distributed with a mean of 15 and standard deviation of 3. If it takes 2 minutes for each person to order, and 10 minutes from ordering to getting your food, what is the likelihood that you have at least 15 minutes left to eat your food before you have to go back to class? Assume you have one hour for lunch, and ignore travel time to and from La Panaderia.
 n_trials = 10_000
 mean = 15
@@ -141,7 +144,44 @@ stats.norm(mean_order_time,sd_order_time).cdf(33)
 
 # Connect to the employees database and find the average salary of current employees, along with the standard deviation. Model the distribution of employees salaries with a normal distribution and answer the following questions:
 
+url = env.get_url("employees")
+pd.read_sql("show tables", url)
+
+query = '''
+    SELECT * 
+    FROM employees as e
+    JOIN dept_emp as de USING (emp_no)
+    JOIN salaries as s USING (emp_no)
+    JOIN departments as d USING (dept_no)
+    WHERE s.to_date = "9999-01-01" AND de.to_date = "9999-01-01"
+    '''
+
+df = pd.read_sql(query,url)
+df.head()
+
+mean_salary = df.salary.mean()
+sd_salary = df.salary.std()
+
+n_trials = 10_000
+data = np.random.normal(mean_salary,sd_salary,n_trials)
+
+salary_distro = stats.norm(mean_salary,sd_salary)
+
 # What percent of employees earn less than 60,000?
+(data < 60000).mean()
+
+salary_distro.cdf(60000)
+
 # What percent of employees earn more than 95,000?
+(data > 95000).mean()
+
+salary_distro.sf(95000-1)
 # What percent of employees earn between 65,000 and 80,000?
+((data > 65000) & (data < 80000)).mean()
+
+salary_distro.cdf(80000) - salary_distro.cdf(65000)
+
 # What do the top 5% of employees make?
+np.percentile(data,95)
+
+salary_distro.isf(.05)

@@ -142,18 +142,15 @@ sd_order_time = sd * order_time
 
 stats.norm(mean_order_time,sd_order_time).cdf(33)
 
-# Connect to the employees database and find the average salary of current employees, along with the standard deviation. Model the distribution of employees salaries with a normal distribution and answer the following questions:
+# 7. Connect to the employees database and find the average salary of current employees, along with the standard deviation. Model the distribution of employees salaries with a normal distribution and answer the following questions:
 
 url = env.get_url("employees")
 pd.read_sql("show tables", url)
 
 query = '''
     SELECT * 
-    FROM employees as e
-    JOIN dept_emp as de USING (emp_no)
-    JOIN salaries as s USING (emp_no)
-    JOIN departments as d USING (dept_no)
-    WHERE s.to_date = "9999-01-01" AND de.to_date = "9999-01-01"
+    FROM salaries 
+    WHERE to_date = "9999-01-01"
     '''
 
 df = pd.read_sql(query,url)
@@ -172,16 +169,26 @@ salary_distro = stats.norm(mean_salary,sd_salary)
 
 salary_distro.cdf(60000)
 
+(df.salary < 60000).mean() #actual
+
 # What percent of employees earn more than 95,000?
 (data > 95000).mean()
 
 salary_distro.sf(95000-1)
+
+(df.salary > 95000).mean() #actual
+
 # What percent of employees earn between 65,000 and 80,000?
 ((data > 65000) & (data < 80000)).mean()
 
 salary_distro.cdf(80000) - salary_distro.cdf(65000)
 
+((df.salary > 65000) & (df.salary < 80000)).mean() #actual
+
 # What do the top 5% of employees make?
 np.percentile(data,95)
 
 salary_distro.isf(.05)
+
+np.percentile(df.salary,95) #actual
+df.salary.quantile(.95)
